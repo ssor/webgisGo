@@ -19,30 +19,6 @@
 <body id="bodyMenu">
     <div class="menu_group_container">
         <div class="menu_container">
-            <a class="menu" href="/right" target="main">地图浏览</a>
-        </div>
-    </div>
-    <div class="menu_group_container">
-        <div class="menu_container">
-            <a class="menu" href="/chooseCarToMnt" target="main">车辆监控</a>
-        </div>
-        <!-- <div class="menu_container">
-    <a class="menu" href="/setRoutePara" target="main">路径回放</a>
-</div>
- -->
-    </div>
-    <div class="menu_group_container">
-        <div class="menu_container">
-            <a class="menu" href="/bagageIndex" target="main">单号查询</a>
-        </div>
-    </div>
-    <div class="menu_group_container">
-        <div class="menu_container">
-            <a class="menu" href="/carIndex" target="main">车辆管理</a>
-        </div>
-    </div>
-    <div class="menu_group_container">
-        <div class="menu_container">
             <a class="menu" href="/userIndex" target="main">用户管理</a>
         </div>
     </div>
@@ -54,13 +30,6 @@
         </div>
     </div>
     <script type="text/javascript">
-    // var contents = document.getElementsByClassName('content');
-    // var toggles = document.getElementsByClassName('type');
-
-    // var myAccordion = new fx.Accordion(
-    // 	toggles, contents, {opacity: true, duration: 400}
-    // );
-    // myAccordion.showThisHideOpen(contents[0]);
     </script>
     </td>
     </tr>

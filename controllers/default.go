@@ -130,15 +130,31 @@ func (m *MainController) Top() {
 	m.TplNames = "top.tpl"
 }
 func (m *MainController) Right() {
-	m.TplNames = "right.tpl"
+	if u, e := m.getCurrentUser(); e == nil {
+		if u.equal(administrator) {
+			m.TplNames = "userIndex.tpl"
+		} else {
+			m.TplNames = "right.tpl"
+		}
+	}
 }
 func (m *MainController) Main() {
+	if _, err := m.getCurrentUser(); err != nil {
+		m.Redirect("/", 302)
+		return
+	}
 	m.TplNames = "main.tpl"
 }
 func (m *MainController) UserIndex() {
 	m.TplNames = "userIndex.tpl"
 }
+func (m *MainController) Logout() {
+	responseHandler(m, func(m *MainController) (interface{}, error) {
+		m.DelSession("ID")
+		return nil, nil
+	})
 
+}
 func (m *MainController) UserList() {
 	m.Data["json"] = g_users
 	m.ServeJson()
