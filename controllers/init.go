@@ -32,9 +32,6 @@ func jiecheng(n int) int {
 	return n * jiecheng(n-1)
 }
 func init() {
-
-	// fmt.Println(fmt.Sprintf("%d => %d", 4, jiechengTail(4, 1)))
-
 	administrator = loadAdminInfo()
 	if administrator == nil {
 		administrator = &User{
@@ -52,8 +49,8 @@ func init() {
 	}
 }
 
-func saveAdminInfo(admin *User) error {
-	return saveData(adminDataFile, admin)
+func saveUserInfo(user *User) error {
+	return saveData(adminDataFile, user)
 }
 func loadAdminInfo() *User {
 	u := &User{}

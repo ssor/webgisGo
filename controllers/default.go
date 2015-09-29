@@ -292,6 +292,11 @@ func (m *MainController) PostNewPassword() {
 		if user, err := m.getCurrentUser(); err == nil {
 			if e := user.setNewPwd(pwdCrt, pwdNew); e == nil {
 				DebugInfoF("密码已更新")
+				if user.equal(administrator) {
+					saveUserInfo(administrator)
+				} else {
+					saveUsers(g_users)
+				}
 			} else {
 				return nil, e
 			}
