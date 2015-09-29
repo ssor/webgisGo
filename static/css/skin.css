@@ -1,0 +1,339 @@
+.login_top_bg {
+	background-image: url(../Image/login-top-bg.gif);
+	background-repeat: repeat-x;
+	width:100%;
+	height:42px;
+}
+.loginBody
+{
+	margin:0;
+	background-color: #EEF2FB;
+}
+.body {
+	background-color: #EEF2FB;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+}
+.showLogo
+{
+	background-image: url(../Image/logo.gif);
+	width:262px;
+	height:64px;
+}
+.login-buttom-bg {
+	position:absolute;
+	top:575px;
+	left:0px;
+	width:100%;
+	height:30px;
+	/*background-image: url(../Image/login-buttom-bg.gif);*/
+	background-color: rgb(29,54,71);
+	background-repeat: repeat-x repeat-y;
+}
+.login-buttom-txt {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color: #ABCAD3;
+	text-decoration: none;
+	line-height: 20px;
+}
+.login_txt {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	line-height: 25px;
+	color: #333333;
+}
+.login_txt1 {
+	position:absolute;
+	top:213px;
+	left:40%;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #333333;
+}
+.login_txt2 {
+	position:absolute;
+	top:266px;
+	left:40%;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #333333;
+}
+.editbox1
+{
+	position:absolute;
+	top:210px;
+	left:44%;
+}
+.editbox2
+{
+	position:absolute;
+	top:263px;
+	left:44%;
+}
+.secretImag
+{
+	position:absolute;
+	top:266px;
+	left:55%;
+}
+.buttonLogin
+{
+	position:absolute;
+	top:60%;
+	left:43%;
+	width:4%;
+}
+.buttonReset
+{
+	position:absolute;
+	top:60%;
+	left:52%;
+	width:4%;
+}
+.login_tip
+{
+	position:absolute;
+	top:120px;
+	left:37%;
+	width:279px;
+	height:68px;
+	background-image: url(../Image/logo.png);
+}
+.Submit {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #629DAE;
+	text-decoration: none;
+	background-image: url(../Image/Submit_bg.gif);
+	background-repeat: repeat-x;
+}
+.login_bg {
+	position:absolute;
+	top:43px;
+	left:0px;
+	width:100%;
+	height:532px;
+	background-image: url(../Image/login_bg.jpg);
+	background-repeat: repeat-x;
+}
+.login_bg2 {
+	position:absolute;
+	top:43px;
+	left:0px;
+	width:50%;
+	height:532px;
+	background-image: url(../Image/login-content-bg.gif);
+	background-repeat: no-repeat;
+	background-position: right;
+}
+.divLogo
+{
+	position:absolute;
+	top:0px;
+	left:0px;
+	width:262px;
+	height:64px;
+	background-image: url(../Image/logo2.png);
+}
+.admin_txt {
+	position:absolute;
+	top:35px;
+	right:50px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: rgb(52,82,108);
+	text-decoration: none;
+	text-align:right;
+	height: 25px;
+	width: 50%;
+	line-height: 25px;
+}
+.login_txt_bt {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	line-height: 25px;
+	color: #666666;
+	font-weight: bold;
+}
+.top_logout
+{
+	position:absolute;
+	/*width:46px;*/
+	/*height:20px;*/
+	top:15px;
+	right:16px;
+	
+}
+.divTopbg
+{
+	width:100%;
+	height:54px;
+	/*background-image: url(../Image/top-right.gif);*/
+	background-color: rgb(252,252,252);
+	background-repeat: repeat-x;
+}
+
+.admin_topbg {
+	background-image: url(../Image/top-right.gif);
+	background-repeat: repeat-x;
+}
+.txt_bt {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	line-height: 25px;
+	font-weight: bold;
+	color: #000000;
+	text-decoration: none;
+}
+.left_topbg {
+	background-image: url(../Image/content-bg.gif);
+	background-repeat: repeat-x;
+}
+.admin_toptxt {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #4A8091;
+	height: 18px;
+	width: 100%;
+	overflow: hidden;
+	position: ¹Ì¶¨;
+}
+
+.left_bt {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color: #395a7b;
+}
+.left_bt2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	line-height: 25px;
+	font-weight: bold;
+	color: #333333;
+}
+.titlebt {
+	font-size: 12px;
+	line-height: 26px;
+	font-weight: bold;
+	color: #000000;
+	background-image: url(../Image/top_bt.jpg);
+	background-repeat: no-repeat;
+	display: block;
+	text-indent: 15px;
+	padding-top: 5px;
+}
+
+.left_txt {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	line-height: 25px;
+	color: #666666;
+	text-align:left;
+}
+.left_txt2 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	line-height: 25px;
+	color: #000000;
+}
+.nowtable {
+	background-color: #e1e5ee;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-top-style: solid;
+	border-top-color: #bfc4ca;
+	border-right-color: #bfc4ca;
+	border-bottom-color: #bfc4ca;
+	border-left-color: #bfc4ca;
+}
+.left_txt3 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	line-height: 25px;
+	color: #003366;
+	text-decoration: none;
+}
+
+
+
+.left_ts {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	line-height: 25px;
+	font-weight: bold;
+	color: #FF6600;
+}
+.line_table {
+	border: 1px solid #CCCCCC;
+}
+.sec1 {
+	CURSOR: hand;
+	COLOR: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	line-height: 25px;
+	border: 1px solid #B5D0D9;
+	background-image: url(../Image/right_smbg.jpg);
+	background-repeat: repeat-x;
+}
+.sec2 {
+	FONT-WEIGHT: bold;
+	CURSOR: hand;
+	COLOR: #000000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	line-height: 25px;
+	background-color: #e2e7ed;
+	border: 1px solid #e2e7ed;
+}
+.main_tab {
+	COLOR: #000000;
+	BACKGROUND-COLOR: #e2e7ed;
+	border: 1px solid #e2e7ed;
+}
+.MM a {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	line-height: 26px;
+	color: #666666;
+	background-image: url(../Image/menu_bg.gif);
+	background-repeat: no-repeat;
+	list-style-type: none;
+	list-style-image: none;
+}
+a:link {
+	font-size: 12px;
+	line-height: 25px;
+	color: #333333;
+	text-decoration: none;
+}
+a:hover {
+	font-size: 12px;
+	line-height: 25px;
+	color: #666666;
+	text-decoration: none;
+}
+a:visited {
+	font-size: 12px;
+	line-height: 25px;
+	color: #333333;
+	text-decoration: none;
+}
+
+
+.MM a:link {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	line-height: 26px;
+	color: #666666;
+	background-image: url(../Image/menu_bg.gif);
+	background-repeat: no-repeat;
+	list-style-type: none;
+	list-style-image: none;
+}
