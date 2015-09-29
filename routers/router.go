@@ -52,6 +52,7 @@ func init() {
 	beego.Router("/bagageIndex", &controllers.MainController{}, "GET:BagageIndex")
 	beego.Router("/bagages", &controllers.MainController{}, "GET:BagageList")
 	beego.Router("/bagages", &controllers.MainController{}, "DELETE:RemoveBagageCarBinding")
+	beego.Router("/bagages", &controllers.MainController{}, "POST:AddBagageCarBinding")
 	// app.post('/addBagageCarBinding', bagage.addBagageCarBinding);
 	// app.post('/removeBagageCarBinding', bagage.removeBagageCarBinding);
 	// app.post('/removeBagageCarBindingForClient', bagage.removeBagageCarBindingForClient);

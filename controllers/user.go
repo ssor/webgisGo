@@ -6,21 +6,14 @@ import (
 	"errors"
 )
 
-var default_password = "111"
-var administrator = &User{
-	// UserID:   "admin",
-	UserName: "系统管理员",
-	Email:    "admin" + subfix,
-	Password: default_password,
-	// Email:    "admin@iot-top.com",
-}
-
-// type ICar interface {
-// 	getID() string
-// 	equal(car *Car) bool
-// 	addBagage(IBagage) error
-// 	bagages() []IBagage
+// var administrator = &User{
+// 	// UserID:   "admin",
+// 	UserName: "系统管理员",
+// 	Email:    "admin" + subfix,
+// 	Password: default_password,
+// 	// Email:    "admin@iot-top.com",
 // }
+
 type userPredictor func(*User) bool
 
 type User struct {

@@ -3,18 +3,22 @@ package controllers
 import (
 	"errors"
 	// "fmt"
+	// "github.com/BurntSushi/toml"
 	"github.com/astaxie/beego"
 	"strings"
 )
 
 var subfix = "@iot-top.com"
+var default_password = "111"
 
 //global vars
 var (
-	g_users = UserList{
-		NewUser("User1"+subfix, "123", "User1"),
-		NewUser("User2"+subfix, "123", "User2"),
-	}
+	// g_users = UserList{
+	// 	NewUser("User1"+subfix, "123", "User1"),
+	// 	NewUser("User2"+subfix, "123", "User2"),
+	// }
+	g_users       UserList
+	administrator *User
 	// g_cars = CarList{
 	// 	NewCar("car001", "truck"),
 	// 	NewCar("car002", "truck"),
@@ -166,6 +170,7 @@ func (m *MainController) DeleteUser() {
 			return nil, errors.New("用户名错误")
 		}
 		g_users = g_users.remove(id)
+		saveUsers(g_users)
 		return nil, nil
 	})
 }
@@ -180,6 +185,7 @@ func (m *MainController) AddUser() {
 			return nil, errors.New("邮箱已被注册")
 		}
 		g_users = append(g_users, NewUser(email, default_password, name))
+		saveUsers(g_users)
 		return nil, nil
 	})
 }
@@ -201,6 +207,7 @@ func (m *MainController) DeleteCar() {
 		id := m.GetString("id")
 		if u, err := m.getCurrentUser(); err == nil {
 			u.removeCar(id)
+			saveUsers(g_users)
 		}
 		return nil, nil
 	})
@@ -215,6 +222,7 @@ func (m *MainController) AddCar() {
 				return nil, errors.New("该车已经被注册！")
 			}
 			u.addCar(NewCar(id, note))
+			saveUsers(g_users)
 		}
 		return nil, nil
 	})
@@ -231,11 +239,36 @@ func (m *MainController) BagageList() {
 		return nil, nil
 	})
 }
+func (m *MainController) AddBagageCarBinding() {
+	responseHandler(m, func(m *MainController) (interface{}, error) {
+		carID := m.GetString("carID")
+		bagageID := m.GetString("bagageID")
+		note := m.GetString("note")
+		if len(carID) <= 0 || len(bagageID) <= 0 {
+			return nil, errors.New("参数不规范")
+		}
+		if u, err := m.getCurrentUser(); err == nil {
+			if u.hasCar(carID) {
+				if e := u.addBagage(carID, NewBagage(bagageID, note)); e == nil {
+					saveUsers(g_users)
+					return nil, nil
+				} else {
+					return nil, e
+				}
+			} else {
+				return nil, errors.New("no such car")
+			}
+		} else {
+			return nil, err
+		}
+	})
+}
 func (m *MainController) RemoveBagageCarBinding() {
 	responseHandler(m, func(m *MainController) (interface{}, error) {
 		id := m.GetString("id")
 		if u, err := m.getCurrentUser(); err == nil {
 			u.removeBagage(id)
+			saveUsers(g_users)
 		}
 		return nil, nil
 	})
