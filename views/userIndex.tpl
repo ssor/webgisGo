@@ -22,10 +22,10 @@
         </div>
     </div>
     <div>
-        <a href="javascript:void(0);" onclick="refresh_grid()" class="sui-btn btn-bordered btn-info" style="width:100px;  margin-top: 40px;">刷新</a>
-        <a href="javascript:void(0);" onclick="add()" class="sui-btn btn-bordered btn-info" style="width:100px;  margin-top: 40px; margin-left: 8px;">增加</a>
-        <a href="javascript:void(0);" onclick="resetpwd()" class="sui-btn btn-bordered btn-info" style="width:100px;  margin-top: 40px; margin-left: 8px;">重置密码</a>
-        <a href="javascript:void(0);" onclick="deleteUser()" class="sui-btn btn-bordered btn-info" style="width:100px;  margin-top: 40px; margin-left: 8px;">删除</a>
+        <a href="javascript:void(0);" onclick="refresh_grid()" class="sui-btn  btn-info" style="width:100px;  margin-top: 40px;">刷新</a>
+        <a href="javascript:void(0);" onclick="add()" class="sui-btn  btn-success" style="width:100px;  margin-top: 40px; margin-left: 8px;">增加</a>
+        <a href="javascript:void(0);" onclick="resetpwd()" class="sui-btn  btn-warning" style="width:100px;  margin-top: 40px; margin-left: 8px;">重置密码</a>
+        <a href="javascript:void(0);" onclick="deleteUser()" class="sui-btn  btn-danger" style="width:100px;  margin-top: 40px; margin-left: 8px;">删除</a>
     </div>
     <div style="border-bottom: solid 1px rgba(200,200,200,0.1); margin-top: 5px;margin-bottom:3px;"></div>
     <table id="dtProcess" class="display" cellspacing="0" width="100%" style="text-align: center;">

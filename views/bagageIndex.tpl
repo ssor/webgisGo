@@ -25,9 +25,9 @@
         </div>
     </div>
     <div style="">
-        <a href="javascript:void(0);" onclick="refresh_grid()" class="sui-btn btn-bordered btn-info" style="width:100px;  margin-top: 40px;">刷新</a>
-        <a href="javascript:void(0);" onclick="startMnt()" class="sui-btn btn-bordered btn-info" style="width:100px;  margin-top: 40px; margin-left: 8px;">地图监控</a>
-        <a href="javascript:void(0);" onclick="deleteBagage()" class="sui-btn btn-bordered btn-info" style="width:100px;  margin-top: 40px; margin-left: 8px;">删除</a>
+        <a href="javascript:void(0);" onclick="refresh_grid()" class="sui-btn  btn-info" style="width:100px;  margin-top: 40px;">刷新</a>
+        <a href="javascript:void(0);" onclick="startMnt()" class="sui-btn  btn-success" style="width:100px;  margin-top: 40px; margin-left: 8px;">地图监控</a>
+        <a href="javascript:void(0);" onclick="deleteBagage()" class="sui-btn  btn-danger" style="width:100px;  margin-top: 40px; margin-left: 8px;">删除</a>
     </div>
     <div style="border-bottom: solid 1px rgba(200,200,200,0.1); margin-top: 5px;margin-bottom:3px;"></div>
     <table id="dtProcess" class="display" cellspacing="0" width="100%">

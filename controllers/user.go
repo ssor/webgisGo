@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	// "github.com/ungerik/go-dry"
 	// "github.com/astaxie/beego"
 	"errors"
+	"os"
 )
 
 // var administrator = &User{
@@ -16,12 +18,6 @@ import (
 
 type userPredictor func(*User) bool
 
-type User struct {
-	// UserID,
-	Email, Password, UserName string
-	Cars                      CarList
-}
-
 func NewUser(email, pwd, name string) *User {
 	return &User{
 		Email:    email,
@@ -30,13 +26,15 @@ func NewUser(email, pwd, name string) *User {
 		Cars:     CarList{},
 	}
 }
-func (u *User) String() string {
-	return fmt.Sprintf("ID: %s  Name: %s  Cars: %d", u.Email, u.UserName, len(u.Cars))
+func (u *User) save2db() {
+	saveData(fmt.Sprintf(userDataFileFormat, u.Email+".toml"), u)
+}
+func (u *User) removeDB() {
+	if err := os.Remove(fmt.Sprintf(userDataFileFormat, u.Email+".toml")); err != nil {
+		DebugSysF("remove user info error: %s", err)
+	}
 }
 
-// func (u *User) ID() string {
-// 	return u.Email
-// }
 func (u *User) bagageExists(id string) bool {
 	return u.Cars.findOne(func(car *Car) bool { return car.hasBagage(id) }) != nil
 }
@@ -83,7 +81,6 @@ func (u *User) addPosition(pos *Positon) {
 	if car := u.Cars.findOne(func(car *Car) bool { return car.ID == pos.CarID }); car != nil {
 		car.refreshLatestPosition(pos)
 	}
-
 }
 func (u *User) getLatestPosition(carID string) *Positon {
 	if car := u.Cars.findOne(func(car *Car) bool { return car.ID == carID }); car != nil {
@@ -91,33 +88,34 @@ func (u *User) getLatestPosition(carID string) *Positon {
 	}
 	return nil
 }
-func (u *User) equal(user *User) bool {
-	return u.Email == user.Email && u.Password == user.Password
+
+// func (u *User) equal(user *User) bool {
+// 	return u.Email == user.Email && u.Password == user.Password
+// }
+// func (u *User) valid(email, pwd string) bool {
+// 	return u.Email == email && u.Password == pwd
+// }
+// func (u *User) isCurrentPwd(pwd string) bool {
+// 	return u.Password == pwd
+// }
+func (u *User) equal(p userPredictor) bool {
+	return p(u)
 }
-func (u *User) valid(email, pwd string) bool {
-	return u.Email == email && u.Password == pwd
-}
-func (u *User) setPwdDefault() {
-	u.Password = default_password
-}
-func (u *User) setNewPwd(pwdCrt, pwdNew string) error {
-	if u.Password == pwdCrt {
+
+// func (u *User) setPwdDefault() {
+// 	u.Password = default_password
+// }
+func (u *User) setNewPwd(p userPredictor, pwdNew string) error {
+	// func (u *User) setNewPwd(pwdCrt, pwdNew string) error {
+	if p(u) {
 		u.Password = pwdNew
 	} else {
 		return errors.New("当前密码错误！")
 	}
 	return nil
 }
-func (u *User) isCurrentPwd(pwd string) bool {
-	return u.Password == pwd
-}
 
-type UserList []*User
-
-// func (ul UserList) carExists(id string) bool {
-// 	return ul.findOne(func(u *User) bool { return u.hasCar(id) }) != nil
-// }
-
+//-------------------------------------------------------------------------------
 func (ul UserList) exists(email string) bool {
 	return ul.findOne(func(u *User) bool { return u.Email == email }) != nil
 }
@@ -125,13 +123,13 @@ func (ul UserList) exists(email string) bool {
 func (ul UserList) remove(email string) UserList {
 	return ul.removeRecursive(func(u *User) bool { return u.Email == email }, UserList{})
 }
-func (ul UserList) forOne(f func(*User), p userPredictor) error {
+func (ul UserList) forOne(f func(*User), p userPredictor) (*User, error) {
 	if u := ul.findOne(p); u != nil {
 		f(u)
+		return u, nil
 	} else {
-		return errors.New("Not Found")
+		return nil, errors.New("Not Found")
 	}
-	return nil
 }
 func (ul UserList) findOne(p userPredictor) *User {
 	if len(ul) <= 0 {
@@ -148,6 +146,7 @@ func (ul UserList) removeRecursive(f userPredictor, list UserList) UserList {
 		return list
 	}
 	if f(ul[0]) {
+		ul[0].removeDB()
 		return append(list, ul[1:]...)
 	} else {
 		return ul[1:].removeRecursive(f, list)

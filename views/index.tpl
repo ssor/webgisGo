@@ -5,6 +5,8 @@
     <title>车辆监控系统登录</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/Image/logo_pure.png">
+    
     <link href="/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen">
     <script type="text/javascript" language="javascript" src="/javascripts/jquery.min.js"></script>
     <script type="text/javascript" src="/javascripts/jquery.qrcode.min.js"></script>

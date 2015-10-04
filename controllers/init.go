@@ -11,71 +11,54 @@ import (
 )
 
 var (
-	userDataFile  = "./data/users.toml"
-	adminDataFile = "./data/admin.toml"
+	// userDataFile  = "./data/users.toml"
+	// adminDataFile = "./data/admin.toml"
+	dbDir = "./data/"
+
+	adminDefaultInfo = &User{
+		UserName: "系统管理员",
+		Email:    "admin",
+		Password: default_password,
+	}
 )
 
-type usersInfo struct {
-	Users UserList
-}
-
-func jiechengTail(n, result int) int {
-	if n == 0 {
-		return result
-	}
-	return jiechengTail(n-1, result*n)
-}
-func jiecheng(n int) int {
-	if n == 0 {
-		return 1
-	}
-	return n * jiecheng(n-1)
-}
 func init() {
-	administrator = loadAdminInfo()
-	if administrator == nil {
-		administrator = &User{
-			UserName: "系统管理员",
-			Email:    "admin" + subfix,
-			Password: default_password,
-		}
-	}
-
-	g_users = loadUsers()
-	if g_users == nil {
-		g_users = UserList{}
-	} else {
+	files, err := dry.ListDirFiles(dbDir)
+	if err == nil {
+		g_users = loadUsersFromDB(files)
 		DebugInfoF("%d total users loaded", len(g_users))
 	}
+
+	administrator = loadUserInfoFromDB("admin.toml")
+	if administrator == nil {
+		administrator = adminDefaultInfo
+	}
+}
+func loadUsersFromDB(files []string) UserList {
+	return loadUsersFromDBRecursive(files, UserList{})
+}
+func loadUsersFromDBRecursive(files []string, list UserList) UserList {
+	if len(files) <= 0 {
+		return list
+	}
+	user := loadUserInfoFromDB(files[0])
+	if user == nil {
+		DebugSysF("load user %s error", files[0])
+	} else {
+		list = append(list, user)
+	}
+	return loadUsersFromDBRecursive(files[1:], list)
 }
 
-func saveUserInfo(user *User) error {
-	return saveData(adminDataFile, user)
-}
-func loadAdminInfo() *User {
-	u := &User{}
-	if e := loadData(adminDataFile, u); e == nil {
-		return u
+func loadUserInfoFromDB(file string) *User {
+	var u User
+	file = fmt.Sprintf(userDataFileFormat, file)
+	if e := loadData(file, &u); e == nil {
+		return &u
 	} else {
+		DebugSysF("load user info from db error: %s", e)
 		return nil
 	}
-}
-func saveUsers(users UserList) error {
-	return saveData(userDataFile, usersInfo{users})
-}
-func loadUsers() UserList {
-	ui := &usersInfo{}
-	if e := loadData(userDataFile, ui); e == nil {
-		DebugInfoF("load user info sucess")
-	} else {
-		DebugSysF("load user info failed: %s", e)
-		return nil
-	}
-	if ui != nil {
-		return ui.Users
-	}
-	return nil
-	// return ui.users
 }
 
 //载入数据

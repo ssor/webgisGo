@@ -3,6 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html;	charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="/Image/logo_pure.png">
     <style>
     .infoWindowContent {
         width: 120px;

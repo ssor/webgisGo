@@ -5,35 +5,17 @@ import (
 	// "fmt"
 	// "github.com/BurntSushi/toml"
 	"github.com/astaxie/beego"
-	"strings"
+	// "strings"
 )
 
-var subfix = "@iot-top.com"
+// var subfix = "@iot-top.com"
 var default_password = "111"
+var userDataFileFormat = "./data/%s"
 
 //global vars
 var (
-	// g_users = UserList{
-	// 	NewUser("User1"+subfix, "123", "User1"),
-	// 	NewUser("User2"+subfix, "123", "User2"),
-	// }
 	g_users       UserList
 	administrator *User
-	// g_cars = CarList{
-	// 	NewCar("car001", "truck"),
-	// 	NewCar("car002", "truck"),
-	// 	NewCar("car003", "car"),
-	// 	// NewCar("car001", "truck", g_users[0]),
-	// 	// NewCar("car002", "truck", g_users[1]),
-	// 	// NewCar("car003", "car", g_users[1]),
-	// }
-	// g_bagages = BagageList{
-	// 	NewBagage("b001", ""),
-	// 	NewBagage("b002", ""),
-	// 	// NewBagage("b001", "car001", ""),
-	// 	// NewBagage("b002", "car001", ""),
-	// }
-	// g_positions = make(CarIDTaggedPositionList)
 )
 
 type ResponseMsg struct {
@@ -82,10 +64,20 @@ func responseHandler(m *MainController, handler logicHandler) {
 }
 func (m *MainController) getCurrentUser() (*User, error) {
 	if s := m.GetSession("ID"); s == nil {
+		userID := m.GetString("id")
+		pwd := m.GetString("pwd")
+		if len(userID) > 0 && len(pwd) > 0 {
+			p := func(u *User) bool { return u.Email == userID && u.Password == pwd }
+			if user := g_users.findOne(func(u *User) bool { return u.equal(p) }); user != nil {
+				// if user := g_users.findOne(func(u *User) bool { return u.valid(userID, pwd) }); user != nil {
+				DebugInfoF("login by api ")
+				return user, nil
+			}
+		}
 		DebugSysF("尚未登录")
 		return nil, errors.New("尚未登录")
 	} else {
-		DebugInfoF("getCurrentUser %s ", s)
+		// DebugInfoF("getCurrentUser %s ", s)
 		return s.(*User), nil
 	}
 }
@@ -104,15 +96,17 @@ func (m *MainController) CheckLogin() {
 		m.ServeJson()
 	}()
 	id := m.GetString("id")
-	if strings.Contains(id, "@") == false {
-		id = id + subfix
-	}
+	// if strings.Contains(id, "@") == false {
+	// 	id = id + subfix
+	// }
 	pwd := m.GetString("pwd")
-	if administrator.valid(id, pwd) {
+	p := func(u *User) bool { return u.Email == id && u.Password == pwd }
+	if administrator.equal(p) {
+		// if administrator.valid(id, pwd) {
 		m.SetSession("ID", administrator)
 		return
 	}
-	user := g_users.findOne(func(u *User) bool { return u.valid(id, pwd) })
+	user := g_users.findOne(func(u *User) bool { return u.equal(p) })
 	if len(id) <= 0 || len(pwd) <= 0 || user == nil {
 		response = NewResponseMsg(1, "用户名或者密码错误")
 		// return nil, errors.New("用户名或者密码错误")
@@ -122,7 +116,8 @@ func (m *MainController) CheckLogin() {
 }
 func (m *MainController) Left() {
 	if u, e := m.getCurrentUser(); e == nil {
-		if u.equal(administrator) {
+		if u.equal(func(user *User) bool { return user.Email == administrator.Email }) {
+			// if u.equal(administrator) {
 			m.TplNames = "left_admin.tpl"
 		} else {
 			// m.TplNames = "left_admin.tpl"
@@ -135,7 +130,8 @@ func (m *MainController) Top() {
 }
 func (m *MainController) Right() {
 	if u, e := m.getCurrentUser(); e == nil {
-		if u.equal(administrator) {
+		if u.equal(func(user *User) bool { return user.Email == administrator.Email }) {
+			// if u.equal(administrator) {
 			m.TplNames = "userIndex.tpl"
 		} else {
 			m.TplNames = "right.tpl"
@@ -157,7 +153,6 @@ func (m *MainController) Logout() {
 		m.DelSession("ID")
 		return nil, nil
 	})
-
 }
 func (m *MainController) UserList() {
 	m.Data["json"] = g_users
@@ -170,7 +165,7 @@ func (m *MainController) DeleteUser() {
 			return nil, errors.New("用户名错误")
 		}
 		g_users = g_users.remove(id)
-		saveUsers(g_users)
+		// saveUsers(g_users)
 		return nil, nil
 	})
 }
@@ -181,11 +176,16 @@ func (m *MainController) AddUser() {
 		if len(email) <= 0 || len(name) <= 0 {
 			return nil, errors.New("注册的用户名错误")
 		}
+		// if strings.Contains(email, "@") == false {
+		// 	email = email + subfix
+		// }
+
 		if g_users.exists(email) == true {
-			return nil, errors.New("邮箱已被注册")
+			return nil, errors.New("用户名已被注册")
 		}
-		g_users = append(g_users, NewUser(email, default_password, name))
-		saveUsers(g_users)
+		u := NewUser(email, default_password, name)
+		g_users = append(g_users, u)
+		u.save2db()
 		return nil, nil
 	})
 }
@@ -207,7 +207,7 @@ func (m *MainController) DeleteCar() {
 		id := m.GetString("id")
 		if u, err := m.getCurrentUser(); err == nil {
 			u.removeCar(id)
-			saveUsers(g_users)
+			u.save2db()
 		}
 		return nil, nil
 	})
@@ -217,12 +217,11 @@ func (m *MainController) AddCar() {
 		id := m.GetString("carID")
 		note := m.GetString("note")
 		if u, err := m.getCurrentUser(); err == nil {
-
 			if u.hasCar(id) == true {
 				return nil, errors.New("该车已经被注册！")
 			}
 			u.addCar(NewCar(id, note))
-			saveUsers(g_users)
+			u.save2db()
 		}
 		return nil, nil
 	})
@@ -250,7 +249,8 @@ func (m *MainController) AddBagageCarBinding() {
 		if u, err := m.getCurrentUser(); err == nil {
 			if u.hasCar(carID) {
 				if e := u.addBagage(carID, NewBagage(bagageID, note)); e == nil {
-					saveUsers(g_users)
+					// saveUsers(g_users)
+					u.save2db()
 					return nil, nil
 				} else {
 					return nil, e
@@ -268,7 +268,8 @@ func (m *MainController) RemoveBagageCarBinding() {
 		id := m.GetString("id")
 		if u, err := m.getCurrentUser(); err == nil {
 			u.removeBagage(id)
-			saveUsers(g_users)
+			// saveUsers(g_users)
+			u.save2db()
 		}
 		return nil, nil
 	})
@@ -290,13 +291,10 @@ func (m *MainController) PostNewPassword() {
 			return nil, errors.New("尚未登录")
 		}
 		if user, err := m.getCurrentUser(); err == nil {
-			if e := user.setNewPwd(pwdCrt, pwdNew); e == nil {
+			if e := user.setNewPwd(func(u *User) bool { return u.Password == pwdCrt }, pwdNew); e == nil {
+				// if e := user.setNewPwd(pwdCrt, pwdNew); e == nil {
 				DebugInfoF("密码已更新")
-				if user.equal(administrator) {
-					saveUserInfo(administrator)
-				} else {
-					saveUsers(g_users)
-				}
+				user.save2db()
 			} else {
 				return nil, e
 			}
@@ -333,10 +331,17 @@ func (m *MainController) Resetpwd() {
 		if g_users.exists(id) == false {
 			return nil, errors.New("用户ID错误")
 		}
-		// g_users.setPwdDefault(id)
-		g_users.forOne(func(u *User) { u.setPwdDefault() }, func(u *User) bool { return u.Email == id })
-
-		return nil, nil
+		pFindUser := func(u *User) bool { return u.Email == id }
+		findedUser, err := g_users.forOne(func(u *User) {
+			u.setNewPwd(func(user *User) bool { return user.Password == u.Password }, default_password)
+		}, pFindUser)
+		if err != nil {
+			return nil, err
+		} else {
+			findedUser.save2db()
+			// g_users.forOne(func(u *User) { u.setPwdDefault() }, func(u *User) bool { return u.Email == id })
+			return nil, nil
+		}
 	})
 }
 func (m *MainController) StartMnting() {
@@ -349,8 +354,6 @@ func (m *MainController) Getgps() {
 		pos := m.GetSession("ID").(*User).getLatestPosition(carID)
 		DebugTraceF("%s => %s", carID, pos)
 		return pos, nil
-		// return errors.New("no data")
-		// return nil, nil
 	})
 }
 func (m *MainController) MobileLogin() {
@@ -371,15 +374,18 @@ func (m *MainController) Postgps() {
 		carID := m.GetString("carID")
 		Lat, err1 := m.GetFloat("Lat")
 		Lng, err2 := m.GetFloat("Lng")
-		// DebugInfoF("<= postgps (%s)", carID)
 		if err1 != nil || err2 != nil {
 			DebugSysF("%s %s", err1, err2)
 			return nil, errors.New("上传位置信息错误")
 		}
 		pos := NewPosition(carID, Lat, Lng)
-		m.GetSession("ID").(*User).addPosition(pos)
-		DebugTraceF("<= %s", pos)
-		// DebugPrintList_Trace(g_positions)
-		return nil, nil
+		if user, err := m.getCurrentUser(); err == nil {
+			user.addPosition(pos)
+			DebugTraceF("<= %s", pos)
+			// DebugPrintList_Trace(g_positions)
+			return nil, nil
+		} else {
+			return nil, err
+		}
 	})
 }

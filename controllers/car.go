@@ -7,21 +7,7 @@ import (
 	"time"
 )
 
-// type Owner interface {
-// 	ID() string
-// }
 type carPredictor func(*Car) bool
-
-// type IBagage interface {
-// 	getID() string
-// 	setCarID(string)
-// }
-type Car struct {
-	ID, AddedTime, Note string
-	Owner               string
-	Bagages             BagageList `json:"-"`
-	LatestPosition      *Positon
-}
 
 func NewCar(id, note string) *Car {
 	// func NewCar(id, note string, owner Owner) *Car {
@@ -61,15 +47,6 @@ func (c *Car) getLatestPosition() *Positon {
 func (c *Car) refreshLatestPosition(pos *Positon) {
 	c.LatestPosition = pos
 }
-
-// func (c *Car) bagages() (l BagageList) {
-// 	for _, v := range c.Bagages {
-// 		l = append(l, v)
-// 	}
-// 	return
-// }
-
-type CarList []*Car
 
 func (cl CarList) exists(id string) bool {
 	return cl.findOne(func(c *Car) bool { return c.ID == id }) != nil

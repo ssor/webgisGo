@@ -12,11 +12,6 @@ func init() {
 }
 
 type positionPredictor func(*Positon) bool
-type Positon struct {
-	CarID     string
-	Lat, Lng  float64
-	TimeStamp string
-}
 
 func (p *Positon) String() string {
 	return fmt.Sprintf("car(%s) %s (%f, %f)", p.CarID, p.TimeStamp, p.Lng, p.Lat)
@@ -30,8 +25,6 @@ func NewPosition(car string, lat, lng float64) *Positon {
 		TimeStamp: addedTime,
 	}
 }
-
-type PositionList []*Positon
 
 func (pl PositionList) find(p positionPredictor) PositionList {
 	return pl.findRecursive(p, PositionList{})

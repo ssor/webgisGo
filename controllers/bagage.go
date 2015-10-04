@@ -3,15 +3,10 @@ package controllers
 import (
 	// "fmt"
 	"errors"
-	// "github.com/astaxie/beego"
 	"time"
 )
 
 type bagagePredicotr func(*Bagage) bool
-type Bagage struct {
-	// ID, AddedTime, Note string
-	ID, CarID, AddedTime, Note string
-}
 
 func NewBagage(id, note string) *Bagage {
 	addedTime := time.Now().Format("2006-01-02 15:04:05")
@@ -23,13 +18,6 @@ func NewBagage(id, note string) *Bagage {
 		// id, carID, addedTime, note,
 	}
 }
-
-// func (b *Bagage) setCarID(carID string) *Bagage {
-// 	b.CarID = carID
-// 	return b
-// }
-
-type BagageList []*Bagage
 
 func (bl BagageList) findOne(p bagagePredicotr) *Bagage {
 	if len(bl) <= 0 {
