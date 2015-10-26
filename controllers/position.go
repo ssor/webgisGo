@@ -7,9 +7,13 @@ import (
 	"time"
 )
 
-func init() {
-	// fmt.Println("2006-01-02 00:00:00"[:10])
+type Positon struct {
+	CarID     string
+	Lat, Lng  float64
+	TimeStamp string
 }
+
+type PositionList []*Positon
 
 type positionPredictor func(*Positon) bool
 

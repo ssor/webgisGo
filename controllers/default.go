@@ -8,16 +8,6 @@ import (
 	// "strings"
 )
 
-// var subfix = "@iot-top.com"
-var default_password = "111"
-var userDataFileFormat = "./data/%s"
-
-//global vars
-var (
-	g_users       UserList
-	administrator *User
-)
-
 type ResponseMsg struct {
 	Code    int
 	Message string
@@ -68,7 +58,7 @@ func (m *MainController) getCurrentUser() (*User, error) {
 		pwd := m.GetString("pwd")
 		if len(userID) > 0 && len(pwd) > 0 {
 			p := func(u *User) bool { return u.Email == userID && u.Password == pwd }
-			if user := g_users.findOne(func(u *User) bool { return u.equal(p) }); user != nil {
+			if user := g_var.users.findOne(func(u *User) bool { return u.equal(p) }); user != nil {
 				// if user := g_users.findOne(func(u *User) bool { return u.valid(userID, pwd) }); user != nil {
 				DebugInfoF("login by api ")
 				return user, nil
@@ -101,26 +91,27 @@ func (m *MainController) CheckLogin() {
 	// }
 	pwd := m.GetString("pwd")
 	p := func(u *User) bool { return u.Email == id && u.Password == pwd }
-	if administrator.equal(p) {
+	if g_var.administrator.equal(p) {
 		// if administrator.valid(id, pwd) {
-		m.SetSession("ID", administrator)
+		DebugInfoF("%s 登录", g_var.administrator.Email)
+		m.SetSession("ID", g_var.administrator)
 		return
 	}
-	user := g_users.findOne(func(u *User) bool { return u.equal(p) })
+	user := g_var.users.findOne(func(u *User) bool { return u.equal(p) })
 	if len(id) <= 0 || len(pwd) <= 0 || user == nil {
 		response = NewResponseMsg(1, "用户名或者密码错误")
 		// return nil, errors.New("用户名或者密码错误")
 		return
 	}
 	m.SetSession("ID", user)
+	DebugInfoF("%s 登录", user.Email)
+
 }
 func (m *MainController) Left() {
 	if u, e := m.getCurrentUser(); e == nil {
-		if u.equal(func(user *User) bool { return user.Email == administrator.Email }) {
-			// if u.equal(administrator) {
+		if u.equal(func(user *User) bool { return user.Email == g_var.administrator.Email }) {
 			m.TplNames = "left_admin.tpl"
 		} else {
-			// m.TplNames = "left_admin.tpl"
 			m.TplNames = "left.tpl"
 		}
 	}
@@ -130,7 +121,7 @@ func (m *MainController) Top() {
 }
 func (m *MainController) Right() {
 	if u, e := m.getCurrentUser(); e == nil {
-		if u.equal(func(user *User) bool { return user.Email == administrator.Email }) {
+		if u.equal(func(user *User) bool { return user.Email == g_var.administrator.Email }) {
 			// if u.equal(administrator) {
 			m.TplNames = "userIndex.tpl"
 		} else {
@@ -155,16 +146,18 @@ func (m *MainController) Logout() {
 	})
 }
 func (m *MainController) UserList() {
-	m.Data["json"] = g_users
+	m.Data["json"] = g_var.users.find(func(u *User) bool { return u.Email != "admin" })
 	m.ServeJson()
 }
 func (m *MainController) DeleteUser() {
 	responseHandler(m, func(m *MainController) (interface{}, error) {
 		id := m.GetString("id")
-		if g_users.exists(id) == false {
+		// if g_users.exists(id) == false {
+
+		if g_var.users.Has(id) == false {
 			return nil, errors.New("用户名错误")
 		}
-		g_users = g_users.remove(id)
+		g_var.users.Delete(id)
 		// saveUsers(g_users)
 		return nil, nil
 	})
@@ -180,12 +173,13 @@ func (m *MainController) AddUser() {
 		// 	email = email + subfix
 		// }
 
-		if g_users.exists(email) == true {
+		if g_var.users.Has(email) == true {
 			return nil, errors.New("用户名已被注册")
 		}
-		u := NewUser(email, default_password, name)
-		g_users = append(g_users, u)
-		u.save2db()
+		u := NewUser(email, default_password, name, g_var.users)
+		// g_users = append(g_users, u)
+		// u.save2db()
+		g_var.users.Put(u.Email, u)
 		return nil, nil
 	})
 }
@@ -196,7 +190,7 @@ func (m *MainController) CarIndex() {
 func (m *MainController) Cars() {
 	responseHandler(m, func(m *MainController) (interface{}, error) {
 		if u, err := m.getCurrentUser(); err == nil {
-			return u.Cars, nil
+			return u.LinkedCars(), nil
 		} else {
 			return nil, err
 		}
@@ -207,7 +201,7 @@ func (m *MainController) DeleteCar() {
 		id := m.GetString("id")
 		if u, err := m.getCurrentUser(); err == nil {
 			u.removeCar(id)
-			u.save2db()
+			// u.save2db()
 		}
 		return nil, nil
 	})
@@ -220,8 +214,8 @@ func (m *MainController) AddCar() {
 			if u.hasCar(id) == true {
 				return nil, errors.New("该车已经被注册！")
 			}
-			u.addCar(NewCar(id, note))
-			u.save2db()
+			u.addCar(NewCar(id, note, g_var.cars))
+			// u.save2db()
 		}
 		return nil, nil
 	})
@@ -235,6 +229,7 @@ func (m *MainController) BagageList() {
 		if u, err := m.getCurrentUser(); err == nil {
 			return u.bagages(), nil
 		}
+		// DebugInfo("=> BagageList")
 		return nil, nil
 	})
 }
@@ -250,7 +245,7 @@ func (m *MainController) AddBagageCarBinding() {
 			if u.hasCar(carID) {
 				if e := u.addBagage(carID, NewBagage(bagageID, note)); e == nil {
 					// saveUsers(g_users)
-					u.save2db()
+					// u.save2db()
 					return nil, nil
 				} else {
 					return nil, e
@@ -269,7 +264,7 @@ func (m *MainController) RemoveBagageCarBinding() {
 		if u, err := m.getCurrentUser(); err == nil {
 			u.removeBagage(id)
 			// saveUsers(g_users)
-			u.save2db()
+			// u.save2db()
 		}
 		return nil, nil
 	})
@@ -294,7 +289,7 @@ func (m *MainController) PostNewPassword() {
 			if e := user.setNewPwd(func(u *User) bool { return u.Password == pwdCrt }, pwdNew); e == nil {
 				// if e := user.setNewPwd(pwdCrt, pwdNew); e == nil {
 				DebugInfoF("密码已更新")
-				user.save2db()
+				// user.save2db()
 			} else {
 				return nil, e
 			}
@@ -328,17 +323,18 @@ func (m *MainController) Version() {
 func (m *MainController) Resetpwd() {
 	responseHandler(m, func(m *MainController) (interface{}, error) {
 		id := m.GetString("id")
-		if g_users.exists(id) == false {
+		// if g_users.exists(id) == false {
+		if g_var.users.Has(id) == false {
 			return nil, errors.New("用户ID错误")
 		}
 		pFindUser := func(u *User) bool { return u.Email == id }
-		findedUser, err := g_users.forOne(func(u *User) {
+		_, err := g_var.users.forOne(func(u *User) {
 			u.setNewPwd(func(user *User) bool { return user.Password == u.Password }, default_password)
 		}, pFindUser)
 		if err != nil {
 			return nil, err
 		} else {
-			findedUser.save2db()
+			// findedUser.save2db()
 			// g_users.forOne(func(u *User) { u.setPwdDefault() }, func(u *User) bool { return u.Email == id })
 			return nil, nil
 		}

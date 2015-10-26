@@ -3,21 +3,50 @@ package controllers
 import (
 	// "fmt"
 	"errors"
+	"github.com/ungerik/go-dry"
 	// "github.com/astaxie/beego"
+	"GobDB"
 	"time"
 )
 
+type CarList []*Car
+
+type Car struct {
+	ID, AddedTime, Note string
+	Bagages             []string
+	LatestPosition      *Positon
+	dbLink              *CarGobDB
+	// Owner               string
+	// Bagages             BagageList `json:"-"`
+}
+
 type carPredictor func(*Car) bool
 
-func NewCar(id, note string) *Car {
+func NewCar(id, note string, dbLink *CarGobDB) *Car {
 	// func NewCar(id, note string, owner Owner) *Car {
 	addedTime := time.Now().Format("2006-01-02 15:04:05")
 	return &Car{
 		ID:        id,
 		AddedTime: addedTime,
 		Note:      note,
-		Bagages:   BagageList{},
+		Bagages:   []string{},
+		dbLink:    dbLink,
 	}
+}
+func DB2CarList(db *GobDB.DB) CarList {
+	list := CarList{}
+	for _, v := range db.ObjectsMap {
+		list = append(list, v.(*Car))
+	}
+	return list
+}
+func (c *Car) LinkedBagages() BagageList {
+	return c.dbLink.bagages.find(func(b *Bagage) bool {
+		return dry.StringListContains(c.Bagages, b.ID)
+	})
+	// return DB2BagageList(g_dbBagage).find(func(b *Bagage) bool {
+	// 	return dry.StringListContains(c.Bagages, b.ID)
+	// })
 }
 
 // func (c *Car) getID() string {
@@ -27,19 +56,29 @@ func (c *Car) equal(car *Car) bool {
 	return c.ID == car.ID
 }
 func (c *Car) removeBagage(id string) {
-	c.Bagages = c.Bagages.remove(id)
+	// c.Bagages = c.Bagages.remove(id)
+	c.Bagages = dry.StringFilter(func(s string) bool {
+		return s != id
+	}, c.Bagages)
+	if err := c.dbLink.bagages.delete(id); err != nil {
+		DebugSysF("delete bagage error: %s", err)
+	}
 }
 func (c *Car) addBagage(b *Bagage) error {
 	if c.hasBagage(b.ID) {
 		return errors.New("alreay exits")
 	} else {
 		b.CarID = c.ID
-		c.Bagages = append(c.Bagages, b)
+		c.Bagages = append(c.Bagages, b.ID)
+		if err := c.dbLink.bagages.put(b.ID, b); err != nil {
+			return err
+		}
 		return nil
 	}
 }
 func (c *Car) hasBagage(id string) bool {
-	return c.Bagages.exists(id)
+	// return c.Bagages.exists(id)
+	return dry.StringListContains(c.Bagages, id)
 }
 func (c *Car) getLatestPosition() *Positon {
 	return c.LatestPosition

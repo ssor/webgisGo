@@ -2,9 +2,16 @@ package controllers
 
 import (
 	// "fmt"
+	"GobDB"
 	"errors"
 	"time"
 )
+
+type BagageList []*Bagage
+
+type Bagage struct {
+	ID, CarID, AddedTime, Note string
+}
 
 type bagagePredicotr func(*Bagage) bool
 
@@ -18,7 +25,13 @@ func NewBagage(id, note string) *Bagage {
 		// id, carID, addedTime, note,
 	}
 }
-
+func DB2BagageList(db *GobDB.DB) BagageList {
+	list := BagageList{}
+	for _, v := range db.ObjectsMap {
+		list = append(list, v.(*Bagage))
+	}
+	return list
+}
 func (bl BagageList) findOne(p bagagePredicotr) *Bagage {
 	if len(bl) <= 0 {
 		return nil

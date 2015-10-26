@@ -1,4 +1,5 @@
 webgisGo
 data/*
 .gitignore~
-
+gobdb/
+.DS_Store
