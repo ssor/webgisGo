@@ -1,7 +1,8 @@
 package controllers
 
 import (
-	"GobDB"
+	"github.com/ssor/GobDB"
+	// "GobDB"
 	"errors"
 	// "log"
 )

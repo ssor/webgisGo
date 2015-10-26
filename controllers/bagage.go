@@ -2,8 +2,8 @@ package controllers
 
 import (
 	// "fmt"
-	"GobDB"
 	"errors"
+	"github.com/ssor/GobDB"
 	"time"
 )
 

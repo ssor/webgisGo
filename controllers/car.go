@@ -3,9 +3,10 @@ package controllers
 import (
 	// "fmt"
 	"errors"
+	"github.com/ssor/GobDB"
 	"github.com/ungerik/go-dry"
 	// "github.com/astaxie/beego"
-	"GobDB"
+	// "GobDB"
 	"time"
 )
 
