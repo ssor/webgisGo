@@ -34,7 +34,7 @@ func (db *UserGobDB) Update(id string, user *User) error {
 	return db.DB.Update(id, user)
 }
 func (db *UserGobDB) AddUser(user *User) error {
-	return db.Put(user.Email, user)
+	return db.Update(user.Email, user)
 }
 func (db *UserGobDB) Put(id string, user *User) error {
 	return db.DB.Put(id, user)

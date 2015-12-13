@@ -20,8 +20,16 @@ func (db *BagageGobDB) init() error {
 	return err
 }
 func (db *BagageGobDB) addBagage(b *Bagage) error {
-	return db.put(b.ID, b)
+	return db.update(b.ID, b)
 }
+func (db *BagageGobDB) update(id string, b *Bagage) error {
+	err := db.delete(id)
+	if err != nil {
+		return err
+	}
+	return db.put(id, b)
+}
+
 func (db *BagageGobDB) put(id string, b *Bagage) error {
 	return db.DB.Put(id, b)
 }

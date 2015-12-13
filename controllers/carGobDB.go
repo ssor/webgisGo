@@ -31,7 +31,14 @@ func (db *CarGobDB) init() error {
 
 }
 func (db *CarGobDB) addCar(car *Car) error {
-	return db.put(car.ID, car)
+	return db.update(car.ID, car)
+}
+func (db *CarGobDB) update(id string, car *Car) error {
+	err := db.delete(id)
+	if err != nil {
+		return err
+	}
+	return db.put(id, car)
 }
 func (db *CarGobDB) put(id string, car *Car) error {
 	return db.DB.Put(id, car)
