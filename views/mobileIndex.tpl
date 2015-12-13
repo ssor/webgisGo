@@ -67,11 +67,13 @@
             cache: false
         });
         $.get("/cars", function(data) {
-            var carList = data
-            _.each(carList, function(_item) { //添加当前不存在的
-                // updateTile(_item);
-                showCar(_item)
-            });
+            if(data.Code == 0){            
+                var carList = data.Data
+                _.each(carList, function(_item) { //添加当前不存在的
+                    // updateTile(_item);
+                    showCar(_item)
+                });
+            }
         })
     });
 

@@ -190,7 +190,9 @@ func (m *MainController) CarIndex() {
 func (m *MainController) Cars() {
 	responseHandler(m, func(m *MainController) (interface{}, error) {
 		if u, err := m.getCurrentUser(); err == nil {
-			return u.LinkedCars(), nil
+			cars := u.LinkedCars()
+			DebugPrintList_Trace(cars)
+			return cars, nil
 		} else {
 			return nil, err
 		}
@@ -214,7 +216,7 @@ func (m *MainController) AddCar() {
 			if u.hasCar(id) == true {
 				return nil, errors.New("该车已经被注册！")
 			}
-			u.addCar(NewCar(id, note, g_var.cars))
+			return nil, u.addCar(NewCar(id, note, g_var.cars))
 			// u.save2db()
 		}
 		return nil, nil

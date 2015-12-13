@@ -29,6 +29,10 @@ func (db *UserGobDB) init() error {
 		return nil
 	}
 }
+
+func (db *UserGobDB) Update(id string, user *User) error {
+	return db.DB.Update(id, user)
+}
 func (db *UserGobDB) AddUser(user *User) error {
 	return db.Put(user.Email, user)
 }

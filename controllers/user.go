@@ -62,6 +62,7 @@ func NewUser(email, pwd, name string, dbLink *UserGobDB) *User {
 // }
 func (u *User) LinkedCars() CarList {
 	// log.Println(u.dbLink)
+	DebugTraceF("user %s try to get linked cars: %s", u.Email, u.Cars)
 	return u.dbLink.Cars.find(func(car *Car) bool { return dry.StringListContains(u.Cars, car.ID) })
 }
 func (u *User) bagageExists(id string) bool {
@@ -97,8 +98,16 @@ func (u *User) addCar(car *Car) error {
 		return errors.New("already exists")
 	} else {
 		// car.Owner = u.Email
+		if err := u.dbLink.Cars.put(car.ID, car); err != nil {
+			DebugMustF("%s", err)
+			return errors.New("error when save car info")
+		}
 		u.Cars = append(u.Cars, car.ID)
-		u.dbLink.Cars.put(car.ID, car)
+		if err := u.dbLink.Update(u.Email, u); err != nil {
+			DebugMustF("%s", err)
+			u.removeCar(car.ID)
+			return errors.New("error when update user info")
+		}
 		return nil
 	}
 }
@@ -138,9 +147,6 @@ func (u *User) equal(p userPredictor) bool {
 	return p(u)
 }
 
-// func (u *User) setPwdDefault() {
-// 	u.Password = default_password
-// }
 func (u *User) setNewPwd(p userPredictor, pwdNew string) error {
 	// func (u *User) setNewPwd(pwdCrt, pwdNew string) error {
 	id := u.Email

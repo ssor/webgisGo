@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	// "fmt"
 	"errors"
+	"fmt"
 	"github.com/ssor/GobDB"
 	"github.com/ungerik/go-dry"
 	// "github.com/astaxie/beego"
@@ -19,6 +19,10 @@ type Car struct {
 	dbLink              *CarGobDB
 	// Owner               string
 	// Bagages             BagageList `json:"-"`
+}
+
+func (c *Car) String() string {
+	return fmt.Sprintf("id: %s AddedTime: %s", c.ID, c.AddedTime)
 }
 
 type carPredictor func(*Car) bool
@@ -134,4 +138,13 @@ func (cl CarList) removeRecursive(f carPredictor, list CarList) CarList {
 	} else {
 		return cl[1:].removeRecursive(f, append(list, cl[0]))
 	}
+}
+func (cl CarList) ListName() string {
+	return "Car List"
+}
+func (cl CarList) InfoList() (l []string) {
+	for _, c := range cl {
+		l = append(l, c.String())
+	}
+	return
 }
